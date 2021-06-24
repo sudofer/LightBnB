@@ -111,8 +111,8 @@ exports.getAllReservations = getAllReservations;
 
   // 3
   if (options.city) {
-    queryParams.push(`%${options.city}%`);
-    queryString += `AND city LIKE $${queryParams.length}`;
+    queryParams.push(`${options.city}`);
+    queryString += `AND city = $${queryParams.length}`;
   }
   
   if(options.owner_id){
