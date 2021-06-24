@@ -85,9 +85,6 @@ const getAllReservations = function(guest_id, limit = 10) {
   return pool.query(`SELECT *, rating as average_rating from reservations JOIN properties ON properties.id = property_id
   JOIN property_reviews ON property_reviews.reservation_id = reservations.id  WHERE reservations.guest_id = $1 LIMIT $2`, values)
   .then(res => {
-    console.log(res.rows);
-    //console.log(guest_id, limit);
-    //console.log(res.rows[0]);
     return res.rows;
   })
 }
@@ -114,7 +111,6 @@ exports.getAllReservations = getAllReservations;
 
   // 3
   if (options.city) {
-    console.log('**************',options.city);
     queryParams.push(`%${options.city}%`);
     queryString += `AND city LIKE $${queryParams.length}`;
   }
@@ -170,9 +166,18 @@ exports.getAllProperties = getAllProperties;
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function(property) {
-  const propertyId = Object.keys(properties).length + 1;
-  property.id = propertyId;
-  properties[propertyId] = property;
-  return Promise.resolve(property);
+  const values = Object.values(property);
+  const keys = Object.keys(property);
+  console.log(values);
+  console.log(keys);
+  
+  return pool.query(`
+  INSERT INTO properties (${keys.join(',')})
+  VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *;
+  `, values)
+  .then(res => {
+    console.log(res.rows)
+    return res.rows;
+  })
 }
 exports.addProperty = addProperty;
